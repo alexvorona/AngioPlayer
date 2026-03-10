@@ -58,7 +58,7 @@
                 <ComboBox
                 Width="350" Height="34"
                 ItemsSource="{Binding Scans}"
-                SelectedItem="{Binding SelectedScan}"/>
+                SelectedItem="{Binding SelectedScan, Mode=TwoWay}" />
                 <!-- Load Button -->
                 <Button Width="70" Height="34"
                 Command="{Binding LoadCommand}">

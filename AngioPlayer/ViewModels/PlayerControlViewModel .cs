@@ -6,6 +6,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 
@@ -86,11 +87,11 @@ public partial class PlayerControlViewModel : ObservableObject
 
         string basePath = Path.Combine(ScansPath, SelectedScan);
 
-        _planeA = Directory.GetFiles(Path.Combine(basePath, "PlaneA"), "*.svg")
+        _planeA = Directory.GetFiles(Path.Combine(basePath, "Plane-A"), "*.png")
                            .OrderBy(f => f)
                            .ToList();
 
-        _planeB = Directory.GetFiles(Path.Combine(basePath, "PlaneB"), "*.svg")
+        _planeB = Directory.GetFiles(Path.Combine(basePath, "Plane-B"), "*.png")
                            .OrderBy(f => f)
                            .ToList();
 
@@ -118,19 +119,19 @@ public partial class PlayerControlViewModel : ObservableObject
     [RelayCommand]
     private void Next()
     {
-        SetFrame(CurrentFrame + 1);
+        CurrentFrame += 1;        
     }
 
     [RelayCommand]
     private void Prev()
     {
-        SetFrame(CurrentFrame - 1);
+        CurrentFrame -= 1;
     }
 
     [RelayCommand]
     private void KeyImage()
     {
-        SetFrame(_imageCount / 2);
+        CurrentFrame = (_imageCount / 2);
     }
 
     partial void OnCurrentFrameChanged(int value)
@@ -143,10 +144,7 @@ public partial class PlayerControlViewModel : ObservableObject
         if (_imageCount == 0)
             return;
 
-        frame = (frame + _imageCount) % _imageCount;
-        CurrentFrame = frame;
-
-        PlaneAImage = new SvgImageSource(new Uri(_planeA[frame]));
-        PlaneBImage = new SvgImageSource(new Uri(_planeB[frame]));
+        PlaneAImage = new BitmapImage(new Uri(_planeA[frame]));
+        PlaneBImage = new BitmapImage(new Uri(_planeB[frame]));
     }
 }
