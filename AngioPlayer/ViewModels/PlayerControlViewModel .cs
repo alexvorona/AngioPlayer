@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,6 +13,7 @@ namespace AngioPlayer.ViewModels;
 
 public partial class PlayerControlViewModel : ObservableObject
 {
+    private const string ScansPath = @"C:\Temp\Scans"; // ToDo:should be in config
     [ObservableProperty]
     private string selectedScan;
 
@@ -35,7 +37,10 @@ public partial class PlayerControlViewModel : ObservableObject
 
     private readonly DispatcherQueueTimer _timer;
 
-    public ObservableCollection<string> Scans { get; } = new() { "Scan 1", "Scan 2" };
+    private readonly ScanService _scanService;
+
+    public ObservableCollection<string> Scans => _scanService.Scans;
+
     public ObservableCollection<string> Speeds { get; } = new() { "Slow", "Normal", "Fast" };
 
     private List<string> _planeA = new();
@@ -48,10 +53,12 @@ public partial class PlayerControlViewModel : ObservableObject
         _timer.Interval = TimeSpan.FromMilliseconds(200);
         _timer.Tick += TimerTick;
 
+        // Создаём сервис сканов, указываем путь к папке и UI-диспетчер
+        _scanService = new ScanService(@"C:\Temp\Scans", DispatcherQueue.GetForCurrentThread());
+
         // Сразу показываем Logo.png при старте
         var logoUri = new Uri("ms-appx:///Assets/Logo.png");
         var logoImage = new BitmapImage(logoUri);
-
         PlaneAImage = logoImage;
         PlaneBImage = logoImage;
     }
@@ -74,16 +81,20 @@ public partial class PlayerControlViewModel : ObservableObject
     [RelayCommand]
     private void Load()
     {
-        // Пример загрузки SVG (PlaneA и PlaneB)
-        _planeA = Enumerable.Range(1, 30)
-            .Select(i => $"ms-appx:///Assets/PlaneA/{i}.svg")
-            .ToList();
+        if (string.IsNullOrEmpty(SelectedScan))
+            return;
 
-        _planeB = Enumerable.Range(1, 30)
-            .Select(i => $"ms-appx:///Assets/PlaneB/{i}.svg")
-            .ToList();
+        string basePath = Path.Combine(ScansPath, SelectedScan);
 
-        _imageCount = _planeA.Count;
+        _planeA = Directory.GetFiles(Path.Combine(basePath, "PlaneA"), "*.svg")
+                           .OrderBy(f => f)
+                           .ToList();
+
+        _planeB = Directory.GetFiles(Path.Combine(basePath, "PlaneB"), "*.svg")
+                           .OrderBy(f => f)
+                           .ToList();
+
+        _imageCount = Math.Min(_planeA.Count, _planeB.Count);
         SliderMax = _imageCount - 1;
 
         // Сразу показать середину
@@ -135,7 +146,6 @@ public partial class PlayerControlViewModel : ObservableObject
         frame = (frame + _imageCount) % _imageCount;
         CurrentFrame = frame;
 
-        // Загружаем SVG через SvgImageSource
         PlaneAImage = new SvgImageSource(new Uri(_planeA[frame]));
         PlaneBImage = new SvgImageSource(new Uri(_planeB[frame]));
     }
