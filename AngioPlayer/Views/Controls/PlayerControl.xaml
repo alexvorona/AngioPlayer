@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="AngioPlayer.Views.Controls.PlayerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AngioPlayer.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:Name="RootGrid" Padding="20" RowSpacing="16">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Верхняя часть: Header + Slider -->
+            <RowDefinition Height="*"/>
+            <!-- Основной контент: Planes -->
+        </Grid.RowDefinitions>
+
+        <!-- Верхний блок: две строки, две колонки -->
+        <Grid Grid.Row="0" ColumnSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <!-- Header / ComboBox -->
+                <RowDefinition Height="Auto"/>
+                <!-- Slider / Buttons -->
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <!-- Левый столбец -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Правый столбец -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Левый столбец -->
+            <TextBlock
+            Grid.Row="0" Grid.Column="0"
+            Text="Player"
+            FontSize="22"
+            FontWeight="SemiBold"
+            VerticalAlignment="Center"/>
+
+            <Slider
+            Grid.Row="1" Grid.Column="0"
+            Minimum="0"
+            Maximum="{Binding SliderMax}"
+            Value="{Binding CurrentFrame, Mode=TwoWay}"/>
+
+            <!-- Правый столбец -->
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <!-- ComboBox -->
+                <ComboBox
+                Width="350" Height="34"
+                ItemsSource="{Binding Scans}"
+                SelectedItem="{Binding SelectedScan}"/>
+                <!-- Load Button -->
+                <Button Width="70" Height="34"
+                Command="{Binding LoadCommand}">
+                    <Image Width="24" Height="24">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/Load.svg"/>
+                        </Image.Source>
+                    </Image>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <!-- Buttons -->
+                <Button Command="{Binding PrevCommand}">
+                    <Image Width="24" Height="24">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/Prev.svg"/>
+                        </Image.Source>
+                    </Image>
+                </Button>
+                <Button Command="{Binding PlayCommand}">
+                    <Image Width="24" Height="24">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/Play.svg"/>
+                        </Image.Source>
+                    </Image>
+                </Button>
+                <Button Command="{Binding PauseCommand}">
+                    <Image Width="24" Height="24">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/Pause_default.svg"/>
+                        </Image.Source>
+                    </Image>
+                </Button>
+                <Button Command="{Binding NextCommand}">
+                    <Image Width="24" Height="24">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/Next.svg"/>
+                        </Image.Source>
+                    </Image>
+                </Button>
+                <ComboBox
+                Width="120" Height="36"
+                ItemsSource="{Binding Speeds}"
+                SelectedItem="{Binding SelectedSpeed}"/>
+                <Button Width="70"
+                Command="{Binding KeyImageCommand}">
+                    <Image Width="50" Height="24">
+                        <Image.Source>
+                            <SvgImageSource UriSource="ms-appx:///Assets/key.svg"/>
+                        </Image.Source>
+                    </Image>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- MAIN CONTENT (Planes) -->
+        <Grid Grid.Row="1" ColumnSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- PLANE A -->
+            <StackPanel Grid.Column="0">
+                <TextBlock
+                Text="PLANE A"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,6"
+                Opacity="0.7"/>
+                <Border
+                CornerRadius="10"
+                Background="#E5E5E5"
+                Padding="10">
+                    <Image
+                    Stretch="Uniform"
+                    Source="{Binding PlaneAImage}"/>
+                </Border>
+            </StackPanel>
+
+            <!-- PLANE B -->
+            <StackPanel Grid.Column="1">
+                <TextBlock
+                Text="PLANE B"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,6"
+                Opacity="0.7"/>
+                <Border
+                CornerRadius="10"
+                Background="#E5E5E5"
+                Padding="10">
+                    <Image
+                    Stretch="Uniform"
+                    Source="{Binding PlaneBImage}"/>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>

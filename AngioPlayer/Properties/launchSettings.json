@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AngioPlayer (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AngioPlayer (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
