@@ -21,6 +21,13 @@ public partial class PlayerControlViewModel : ObservableObject
     [ObservableProperty]
     private string selectedSpeed = "Normal";
 
+    [ObservableProperty] private bool isPrevEnabled;
+    [ObservableProperty] private bool isNextEnabled;
+    [ObservableProperty] private bool isPlayEnabled;
+    [ObservableProperty] private bool isPauseEnabled;
+    [ObservableProperty] private bool isSpeedEnabled;
+    [ObservableProperty] private bool isKeyEnabled;
+
     [ObservableProperty]
     private bool isPlaying;
 
@@ -127,20 +134,47 @@ public partial class PlayerControlViewModel : ObservableObject
 
         // Сразу показать середину
         SetFrame(_imageCount / 2);
+
+        EnablePlay();
     }
 
     [RelayCommand]
     private void Play()
     {
         _timer.Start();
+        DisablePlay();
+    }
+
+    private void DisablePlay()
+    {
         IsPlaying = true;
+
+        IsPlayEnabled = false;
+        IsPauseEnabled = true;
+
+        IsSpeedEnabled = true;
+        IsKeyEnabled = true;
+
+        IsPrevEnabled = true;
+        IsNextEnabled = true;
     }
 
     [RelayCommand]
     private void Pause()
     {
         _timer.Stop();
+        EnablePlay();
+    }
+
+    private void EnablePlay()
+    {
         IsPlaying = false;
+
+        IsPlayEnabled = true;
+        IsPauseEnabled = false;
+
+        IsPrevEnabled = false;
+        IsNextEnabled = false;
     }
 
     [RelayCommand]

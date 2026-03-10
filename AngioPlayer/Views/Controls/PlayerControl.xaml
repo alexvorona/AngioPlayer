@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <conv:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <conv:ButtonImageConverter x:Key="ButtonImageConverter"/>        
     </UserControl.Resources>
 
     <Grid x:Name="RootGrid" Padding="20" RowSpacing="16">
@@ -72,41 +73,54 @@
 
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <!-- Buttons -->
-                <Button Command="{Binding PrevCommand}">
-                    <Image Width="24" Height="24">
-                        <Image.Source>
-                            <SvgImageSource UriSource="ms-appx:///Assets/Prev.svg"/>
-                        </Image.Source>
-                    </Image>
+                <Button x:Name="PrevButton" Command="{Binding PrevCommand}" IsEnabled="{Binding IsPrevEnabled}">
+                    <Image Width="24"
+                           Height="24"
+                           Source="{Binding IsEnabled,
+                            ElementName=PrevButton,
+                            Converter={StaticResource ButtonImageConverter},
+                            ConverterParameter=Prev}"/>
                 </Button>
                 <!-- Play Button -->
-                <Button Command="{Binding PlayCommand}"
+                <Button x:Name="PlayButton" Command="{Binding PlayCommand}" IsEnabled="{Binding IsPlayEnabled}"
                         Visibility="{Binding IsPlaying, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                    <Image Width="24" Height="24" Source="ms-appx:///Assets/Play.svg"/>
+                    <Image Width="24"
+                           Height="24"
+                           Source="{Binding IsEnabled,
+                            ElementName=PlayButton,
+                            Converter={StaticResource ButtonImageConverter},
+                            ConverterParameter=Play}"/>
                 </Button>
                 <!-- Pause Button -->
-                <Button Command="{Binding PauseCommand}"
+                <Button x:Name="PauseButton" Command="{Binding PauseCommand}" IsEnabled="{Binding IsPauseEnabled}"
                         Visibility="{Binding IsPlaying, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Image Width="24" Height="24" Source="ms-appx:///Assets/Pause_default.svg"/>
+                    <Image Width="24"
+                           Height="24"
+                           Source="{Binding IsEnabled,
+                            ElementName=PauseButton,
+                            Converter={StaticResource ButtonImageConverter},
+                            ConverterParameter=Pause}"/>
                 </Button>
-                <Button Command="{Binding NextCommand}">
-                    <Image Width="24" Height="24">
-                        <Image.Source>
-                            <SvgImageSource UriSource="ms-appx:///Assets/Next.svg"/>
-                        </Image.Source>
-                    </Image>
+                <Button x:Name="NextButton" Command="{Binding NextCommand}" IsEnabled="{Binding IsNextEnabled}">
+                    <Image Width="24"
+                           Height="24"
+                           Source="{Binding IsEnabled,
+                            ElementName=NextButton,
+                            Converter={StaticResource ButtonImageConverter},
+                            ConverterParameter=Next}"/>
                 </Button>
                 <ComboBox
                 Width="120" Height="36"
                 ItemsSource="{Binding Speeds}"
-                SelectedItem="{Binding SelectedSpeed, Mode=TwoWay}"/>
-                <Button Width="70"
-                Command="{Binding KeyImageCommand}">
-                    <Image Width="50" Height="24">
-                        <Image.Source>
-                            <SvgImageSource UriSource="ms-appx:///Assets/key.svg"/>
-                        </Image.Source>
-                    </Image>
+                SelectedItem="{Binding SelectedSpeed, Mode=TwoWay}"
+                IsEnabled="{Binding IsSpeedEnabled}"/>
+                <Button x:Name="KeyButton" Width="70"
+                Command="{Binding KeyImageCommand}" IsEnabled="{Binding IsKeyEnabled}">
+                    <Image Width="50" Height="24"
+                           Source="{Binding IsEnabled,
+                            ElementName=KeyButton,
+                            Converter={StaticResource ButtonImageConverter},
+                            ConverterParameter=key}"/>
                 </Button>
             </StackPanel>
         </Grid>
