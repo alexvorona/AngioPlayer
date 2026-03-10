@@ -68,7 +68,7 @@ public partial class PlayerControlViewModel : ObservableObject
 
     private void TimerTick(object sender, object e)
     {
-        CurrentFrame += 1;
+        CurrentFrame = (CurrentFrame + 1) > SliderMax ? 0 : CurrentFrame + 1;
     }
 
     partial void OnSelectedSpeedChanged(string value)
@@ -146,7 +146,7 @@ public partial class PlayerControlViewModel : ObservableObject
     [RelayCommand]
     private void Next()
     {
-        CurrentFrame += 1;
+        CurrentFrame = (CurrentFrame + 1) > SliderMax ? 0 : CurrentFrame + 1;
     }
 
     [RelayCommand]
