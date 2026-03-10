@@ -6,7 +6,13 @@
     xmlns:local="using:AngioPlayer.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    xmlns:conv="using:AngioPlayer.Views.Converters"
+    mc:Ignorable="d">    
+    
+    <UserControl.Resources>
+        <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <conv:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+    </UserControl.Resources>
 
     <Grid x:Name="RootGrid" Padding="20" RowSpacing="16">
 
@@ -73,19 +79,15 @@
                         </Image.Source>
                     </Image>
                 </Button>
-                <Button Command="{Binding PlayCommand}">
-                    <Image Width="24" Height="24">
-                        <Image.Source>
-                            <SvgImageSource UriSource="ms-appx:///Assets/Play.svg"/>
-                        </Image.Source>
-                    </Image>
+                <!-- Play Button -->
+                <Button Command="{Binding PlayCommand}"
+                        Visibility="{Binding IsPlaying, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <Image Width="24" Height="24" Source="ms-appx:///Assets/Play.svg"/>
                 </Button>
-                <Button Command="{Binding PauseCommand}">
-                    <Image Width="24" Height="24">
-                        <Image.Source>
-                            <SvgImageSource UriSource="ms-appx:///Assets/Pause_default.svg"/>
-                        </Image.Source>
-                    </Image>
+                <!-- Pause Button -->
+                <Button Command="{Binding PauseCommand}"
+                        Visibility="{Binding IsPlaying, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Image Width="24" Height="24" Source="ms-appx:///Assets/Pause_default.svg"/>
                 </Button>
                 <Button Command="{Binding NextCommand}">
                     <Image Width="24" Height="24">
