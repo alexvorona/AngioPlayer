@@ -46,6 +46,8 @@ public partial class PlayerControlViewModel : ObservableObject
 
     private List<string> _planeA = new();
     private List<string> _planeB = new();
+    private List<ImageSource> _planeABitmaps = new();
+    private List<ImageSource> _planeBBitmaps = new();
     private int _imageCount;
 
     public PlayerControlViewModel()
@@ -98,6 +100,23 @@ public partial class PlayerControlViewModel : ObservableObject
         _imageCount = Math.Min(_planeA.Count, _planeB.Count);
         SliderMax = _imageCount - 1;
 
+        // Предзагрузка BitmapImage, чтобы убрать мерцание
+        _planeABitmaps = _planeA.Select(path =>
+        {
+            var bitmap = new WriteableBitmap(1, 1);
+            using var stream = File.OpenRead(path);
+            bitmap.SetSource(stream.AsRandomAccessStream());
+            return (ImageSource)bitmap;
+        }).ToList();
+
+        _planeBBitmaps = _planeB.Select(path =>
+        {
+            var bitmap = new WriteableBitmap(1, 1);
+            using var stream = File.OpenRead(path);
+            bitmap.SetSource(stream.AsRandomAccessStream());
+            return (ImageSource)bitmap;
+        }).ToList();
+
         // Сразу показать середину
         SetFrame(_imageCount / 2);
     }
@@ -119,7 +138,7 @@ public partial class PlayerControlViewModel : ObservableObject
     [RelayCommand]
     private void Next()
     {
-        CurrentFrame += 1;        
+        CurrentFrame += 1;
     }
 
     [RelayCommand]
@@ -144,7 +163,10 @@ public partial class PlayerControlViewModel : ObservableObject
         if (_imageCount == 0)
             return;
 
-        PlaneAImage = new BitmapImage(new Uri(_planeA[frame]));
-        PlaneBImage = new BitmapImage(new Uri(_planeB[frame]));
+        // Защита от выхода за пределы
+        frame = Math.Clamp(frame, 0, _imageCount - 1);
+
+        PlaneAImage = _planeABitmaps[frame];
+        PlaneBImage = _planeBBitmaps[frame];
     }
 }
