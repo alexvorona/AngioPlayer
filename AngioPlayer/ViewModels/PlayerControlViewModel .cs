@@ -68,17 +68,25 @@ public partial class PlayerControlViewModel : ObservableObject
 
     private void TimerTick(object sender, object e)
     {
-        SetFrame(CurrentFrame + 1);
+        CurrentFrame += 1;
     }
 
     partial void OnSelectedSpeedChanged(string value)
     {
+        bool wasRunning = _timer.IsRunning;
+
+        if (wasRunning)
+            _timer.Stop();
+
         _timer.Interval = value switch
         {
             "Slow" => TimeSpan.FromMilliseconds(400),
-            "Fast" => TimeSpan.FromMilliseconds(100),
-            _ => TimeSpan.FromMilliseconds(200)
+            "Normal" => TimeSpan.FromMilliseconds(200),
+            _ => TimeSpan.FromMilliseconds(100)
         };
+
+        if (wasRunning)
+            _timer.Start();
     }
 
     [RelayCommand]

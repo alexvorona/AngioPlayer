@@ -99,7 +99,7 @@
                 <ComboBox
                 Width="120" Height="36"
                 ItemsSource="{Binding Speeds}"
-                SelectedItem="{Binding SelectedSpeed}"/>
+                SelectedItem="{Binding SelectedSpeed, Mode=TwoWay}"/>
                 <Button Width="70"
                 Command="{Binding KeyImageCommand}">
                     <Image Width="50" Height="24">
