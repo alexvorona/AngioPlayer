@@ -43,12 +43,10 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <!-- Левый столбец -->
                 <ColumnDefinition Width="Auto"/>
-                <!-- Правый столбец -->
             </Grid.ColumnDefinitions>
 
-            <!-- Левый столбец -->
+            <!-- Left column -->
             <TextBlock
             Grid.Row="0" Grid.Column="0"
             Text="Player"
@@ -62,7 +60,7 @@
             Maximum="{Binding SliderMax}"
             Value="{Binding CurrentFrame, Mode=TwoWay}"/>
 
-            <!-- Правый столбец -->
+            <!-- Right column -->
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                 <!-- ComboBox -->
                 <ComboBox

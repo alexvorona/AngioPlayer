@@ -6,7 +6,7 @@ namespace AngioPlayer.Views.Converters;
 public class ButtonImageConverter : IValueConverter
 {
     // value = IsEnabled (bool)
-    // parameter = базовое имя картинки, например "Prev"
+    // parameter = base image name
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         bool isEnabled = value is bool b && b;

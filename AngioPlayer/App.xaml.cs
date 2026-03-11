@@ -26,12 +26,10 @@ public partial class App : Application
     {
         InitializeComponent();
 
-        // Загрузка конфигурации
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        // Настройки сканов
         var scanSettings = configuration.GetSection("ScanSettings").Get<ScanSettings>();
 
         Ioc.Default.ConfigureServices(

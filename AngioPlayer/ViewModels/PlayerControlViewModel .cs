@@ -55,8 +55,8 @@ public partial class PlayerControlViewModel : ObservableObject
 
     public ObservableCollection<string> Speeds { get; } = new() { "Slow", "Normal", "Fast" };
 
-    private List<string> _planeA = new();
-    private List<string> _planeB = new();
+    private List<string> _planeAFilenames = new();
+    private List<string> _planeBFilenames = new();
     private List<ImageSource> _planeABitmaps = new();
     private List<ImageSource> _planeBBitmaps = new();
     private int _imageCount;
@@ -70,7 +70,6 @@ public partial class PlayerControlViewModel : ObservableObject
         _scanService = scanService;
         _notificationsService = notificationsService;
 
-        // Сразу показываем Logo.png при старте
         var logoUri = new Uri("ms-appx:///Assets/Logo.png");
         var logoImage = new BitmapImage(logoUri);
         PlaneAImage = logoImage;
@@ -103,6 +102,8 @@ public partial class PlayerControlViewModel : ObservableObject
     [RelayCommand]
     private void Load()
     {
+        Pause();
+
         if (string.IsNullOrEmpty(SelectedScan))
             return;
 
@@ -116,7 +117,7 @@ public partial class PlayerControlViewModel : ObservableObject
             _notificationsService.ShowError("Scan folder must contain Plane-A and Plane-B directories");
             return;
         }
-        _planeA = Directory.GetFiles(planeAPath, SearchPattern)
+        _planeAFilenames = Directory.GetFiles(planeAPath, SearchPattern)
                            .OrderBy(f =>
                            {
                                var name = Path.GetFileNameWithoutExtension(f);
@@ -127,7 +128,7 @@ public partial class PlayerControlViewModel : ObservableObject
                            })
                            .ToList();
 
-        _planeB = Directory.GetFiles(planeBPath, SearchPattern)
+        _planeBFilenames = Directory.GetFiles(planeBPath, SearchPattern)
                            .OrderBy(f =>
                            {
                                var name = Path.GetFileNameWithoutExtension(f);
@@ -138,10 +139,10 @@ public partial class PlayerControlViewModel : ObservableObject
                            })
                            .ToList();
 
-        _imageCount = Math.Min(_planeA.Count, _planeB.Count);
+        _imageCount = Math.Min(_planeAFilenames.Count, _planeBFilenames.Count);
         SliderMax = _imageCount - 1;
 
-        _planeABitmaps = _planeA.Select(path =>
+        _planeABitmaps = _planeAFilenames.Select(path =>
         {
             var bitmap = new WriteableBitmap(1, 1);
             using var stream = File.OpenRead(path);
@@ -149,7 +150,7 @@ public partial class PlayerControlViewModel : ObservableObject
             return (ImageSource)bitmap;
         }).ToList();
 
-        _planeBBitmaps = _planeB.Select(path =>
+        _planeBBitmaps = _planeBFilenames.Select(path =>
         {
             var bitmap = new WriteableBitmap(1, 1);
             using var stream = File.OpenRead(path);
