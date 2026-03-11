@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using AngioPlayer.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
@@ -15,6 +16,8 @@ namespace AngioPlayer.ViewModels;
 public partial class PlayerControlViewModel : ObservableObject
 {
     private const string ScansPath = @"C:\Temp\Scans"; // ToDo:should be in config
+    private const string SearchPattern = "*.png";
+
     [ObservableProperty]
     private string selectedScan;
 
@@ -46,6 +49,7 @@ public partial class PlayerControlViewModel : ObservableObject
     private readonly DispatcherQueueTimer _timer;
 
     private readonly ScanService _scanService;
+    private readonly INotificationService _notificationsService;
 
     public ObservableCollection<string> Scans => _scanService.Scans;
 
@@ -57,14 +61,15 @@ public partial class PlayerControlViewModel : ObservableObject
     private List<ImageSource> _planeBBitmaps = new();
     private int _imageCount;
 
-    public PlayerControlViewModel()
+    public PlayerControlViewModel(NotificationService notificationsService)
     {
         _timer = DispatcherQueue.GetForCurrentThread().CreateTimer();
         _timer.Interval = TimeSpan.FromMilliseconds(200);
         _timer.Tick += TimerTick;
 
-        // Создаём сервис сканов, указываем путь к папке и UI-диспетчер
-        _scanService = new ScanService(@"C:\Temp\Scans", DispatcherQueue.GetForCurrentThread());
+        // To do: все сервисы должны быть внедрены через DI
+        _scanService = new ScanService(ScansPath, DispatcherQueue.GetForCurrentThread());
+        _notificationsService = notificationsService;
 
         // Сразу показываем Logo.png при старте
         var logoUri = new Uri("ms-appx:///Assets/Logo.png");
@@ -72,7 +77,7 @@ public partial class PlayerControlViewModel : ObservableObject
         PlaneAImage = logoImage;
         PlaneBImage = logoImage;
     }
-
+    
     private void TimerTick(object sender, object e)
     {
         CurrentFrame = (CurrentFrame + 1) > SliderMax ? 0 : CurrentFrame + 1;
@@ -103,12 +108,20 @@ public partial class PlayerControlViewModel : ObservableObject
             return;
 
         string basePath = Path.Combine(ScansPath, SelectedScan);
+        string planeAPath = Path.Combine(basePath, "Plane-A");
+        string planeBPath = Path.Combine(basePath, "Plane-B");
 
-        _planeA = Directory.GetFiles(Path.Combine(basePath, "Plane-A"), "*.png")
+        if (!Directory.Exists(planeAPath) || !Directory.Exists(planeBPath))
+        {
+
+            _notificationsService.ShowError("Scan folder must contain Plane-A and Plane-B directories");
+            return;
+        }
+        _planeA = Directory.GetFiles(planeAPath, SearchPattern)
                            .OrderBy(f => f)
                            .ToList();
 
-        _planeB = Directory.GetFiles(Path.Combine(basePath, "Plane-B"), "*.png")
+        _planeB = Directory.GetFiles(planeBPath, SearchPattern)
                            .OrderBy(f => f)
                            .ToList();
 
