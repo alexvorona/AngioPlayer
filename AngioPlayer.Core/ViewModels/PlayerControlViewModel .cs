@@ -45,7 +45,7 @@ public partial class PlayerControlViewModel : ObservableObject
     [ObservableProperty]
     private int sliderMax;
 
-    private readonly DispatcherQueueTimer _timer;
+    private readonly ITimerService _timer;
 
     private readonly IScanService _scanService;
     private readonly INotificationService _notificationsService;
@@ -60,19 +60,17 @@ public partial class PlayerControlViewModel : ObservableObject
     private List<ImageSource> _planeBBitmaps = new();
     private int _imageCount;
 
-    public PlayerControlViewModel(IScanService scanService, INotificationService notificationsService)
+    public PlayerControlViewModel(
+        IScanService scanService,
+        INotificationService notificationsService,
+        ITimerService timer)
     {
-        _timer = DispatcherQueue.GetForCurrentThread().CreateTimer();
-        _timer.Interval = TimeSpan.FromMilliseconds(200);
-        _timer.Tick += TimerTick;
-
         _scanService = scanService;
         _notificationsService = notificationsService;
+        _timer = timer;
 
-        var logoUri = new Uri("ms-appx:///Assets/Logo.png");
-        var logoImage = new BitmapImage(logoUri);
-        PlaneAImage = logoImage;
-        PlaneBImage = logoImage;
+        _timer.Interval = TimeSpan.FromMilliseconds(200);
+        _timer.Tick += TimerTick;
     }
     
     private void TimerTick(object sender, object e)

@@ -35,11 +35,9 @@ public partial class App : Application
         Ioc.Default.ConfigureServices(
             new ServiceCollection()
                 .AddSingleton(scanSettings)
-                .AddSingleton<IScanService, ScanService>(provider =>
-                {
-                    return new ScanService(scanSettings);
-                })
-                .AddSingleton<INotificationService, NotificationService>()                
+                .AddSingleton<IScanService>(provider => new ScanService(scanSettings))
+                .AddSingleton<INotificationService, NotificationService>()            
+                .AddSingleton<ITimerService, DispatcherTimerService>()
                 .AddTransient<PlayerControlViewModel>()
                 .BuildServiceProvider()
             );
