@@ -117,17 +117,30 @@ public partial class PlayerControlViewModel : ObservableObject
             return;
         }
         _planeA = Directory.GetFiles(planeAPath, SearchPattern)
-                           .OrderBy(f => f)
+                           .OrderBy(f =>
+                           {
+                               var name = Path.GetFileNameWithoutExtension(f);
+                               var parts = name.Split('_');
+                               if (int.TryParse(parts[^1], out int index))
+                                   return index;
+                               return int.MaxValue;
+                           })
                            .ToList();
 
         _planeB = Directory.GetFiles(planeBPath, SearchPattern)
-                           .OrderBy(f => f)
+                           .OrderBy(f =>
+                           {
+                               var name = Path.GetFileNameWithoutExtension(f);
+                               var parts = name.Split('_');
+                               if (int.TryParse(parts[^1], out int index))
+                                   return index;
+                               return int.MaxValue;
+                           })
                            .ToList();
 
         _imageCount = Math.Min(_planeA.Count, _planeB.Count);
         SliderMax = _imageCount - 1;
 
-        // Предзагрузка BitmapImage, чтобы убрать мерцание
         _planeABitmaps = _planeA.Select(path =>
         {
             var bitmap = new WriteableBitmap(1, 1);
@@ -144,8 +157,7 @@ public partial class PlayerControlViewModel : ObservableObject
             return (ImageSource)bitmap;
         }).ToList();
 
-        // Сразу показать середину
-        SetFrame(_imageCount / 2);
+        CurrentFrame = _imageCount / 2;
 
         EnablePlay();
     }
@@ -167,8 +179,8 @@ public partial class PlayerControlViewModel : ObservableObject
         IsSpeedEnabled = true;
         IsKeyEnabled = true;
 
-        IsPrevEnabled = true;
-        IsNextEnabled = true;
+        IsPrevEnabled = false;
+        IsNextEnabled = false;
     }
 
     [RelayCommand]
@@ -185,8 +197,11 @@ public partial class PlayerControlViewModel : ObservableObject
         IsPlayEnabled = true;
         IsPauseEnabled = false;
 
-        IsPrevEnabled = false;
-        IsNextEnabled = false;
+        IsSpeedEnabled = false;
+        IsKeyEnabled = true;
+
+        IsPrevEnabled = true;
+        IsNextEnabled = true;
     }
 
     [RelayCommand]
@@ -204,7 +219,8 @@ public partial class PlayerControlViewModel : ObservableObject
     [RelayCommand]
     private void KeyImage()
     {
-        CurrentFrame = (_imageCount / 2);
+        Pause();
+        CurrentFrame = _imageCount / 2;
     }
 
     partial void OnCurrentFrameChanged(int value)
@@ -216,8 +232,7 @@ public partial class PlayerControlViewModel : ObservableObject
     {
         if (_imageCount == 0)
             return;
-
-        // Защита от выхода за пределы
+                
         frame = Math.Clamp(frame, 0, _imageCount - 1);
 
         PlaneAImage = _planeABitmaps[frame];
