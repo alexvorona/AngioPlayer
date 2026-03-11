@@ -15,7 +15,6 @@ namespace AngioPlayer.ViewModels;
 
 public partial class PlayerControlViewModel : ObservableObject
 {
-    private const string ScansPath = @"C:\Temp\Scans"; // ToDo:should be in config
     private const string SearchPattern = "*.png";
 
     [ObservableProperty]
@@ -107,7 +106,7 @@ public partial class PlayerControlViewModel : ObservableObject
         if (string.IsNullOrEmpty(SelectedScan))
             return;
 
-        string basePath = Path.Combine(ScansPath, SelectedScan);
+        string basePath = _scanService.GetScanPath(SelectedScan);
         string planeAPath = Path.Combine(basePath, "Plane-A");
         string planeBPath = Path.Combine(basePath, "Plane-B");
 

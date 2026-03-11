@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ public interface IScanService
 {
     ObservableCollection<string> Scans { get; }
     void LoadScans();
+    string GetScanPath(string scanName);
 }
 public class ScanService : IScanService
 {
@@ -39,6 +41,12 @@ public class ScanService : IScanService
         {
             Scans.Add(folder);
         }
+    }
+
+    public string GetScanPath(string scanName)
+    {
+        var fullPath = Path.Combine(_scansPath, scanName);
+        return fullPath;
     }
 }
 
