@@ -4,6 +4,10 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="AngioPlayer.Core/AngioPlayer.Core.csproj" Id="788c716a-336a-4b4e-85f1-e67e7c9a7e28" />
+  <Project Path="AngioPlayer.TestProject/AngioPlayer.TestProject.csproj" Id="e817acce-18ce-4ecd-8f47-2c962a78dc62">
+    <Platform Solution="Debug|x64" Project="x64" />
+  </Project>
   <Project Path="AngioPlayer/AngioPlayer.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />

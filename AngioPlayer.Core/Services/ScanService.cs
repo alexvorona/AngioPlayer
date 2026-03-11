@@ -16,14 +16,12 @@ public interface IScanService
 public class ScanService : IScanService
 {
     private readonly string _scansPath;
-    private readonly DispatcherQueue _dispatcher;
 
     public ObservableCollection<string> Scans { get; } = new();
 
-    public ScanService(ScanSettings settings, DispatcherQueue dispatcher)
+    public ScanService(ScanSettings settings)
     {
         _scansPath = settings.ScansPath;
-        _dispatcher = dispatcher;
 
         LoadScans();
     }
@@ -32,6 +30,8 @@ public class ScanService : IScanService
     {
         if (!Directory.Exists(_scansPath))
             return;
+
+        Scans.Clear();
 
         var folders = Directory.GetDirectories(_scansPath)
                                .Select(Path.GetFileName)

@@ -37,8 +37,7 @@ public partial class App : Application
                 .AddSingleton(scanSettings)
                 .AddSingleton<IScanService, ScanService>(provider =>
                 {
-                    var dispatcher = DispatcherQueue.GetForCurrentThread();
-                    return new ScanService(scanSettings, dispatcher);
+                    return new ScanService(scanSettings);
                 })
                 .AddSingleton<INotificationService, NotificationService>()                
                 .AddTransient<PlayerControlViewModel>()
