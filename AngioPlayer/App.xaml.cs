@@ -4,6 +4,8 @@ using AngioPlayer.ViewModels;
 using AngioPlayer.Views;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.UI.Dispatching;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -24,9 +26,23 @@ public partial class App : Application
     {
         InitializeComponent();
 
+        // Загрузка конфигурации
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false)
+            .Build();
+
+        // Настройки сканов
+        var scanSettings = configuration.GetSection("ScanSettings").Get<ScanSettings>();
+
         Ioc.Default.ConfigureServices(
             new ServiceCollection()
-                .AddSingleton<NotificationService>()
+                .AddSingleton(scanSettings)
+                .AddSingleton<IScanService, ScanService>(provider =>
+                {
+                    var dispatcher = DispatcherQueue.GetForCurrentThread();
+                    return new ScanService(scanSettings, dispatcher);
+                })
+                .AddSingleton<INotificationService, NotificationService>()                
                 .AddTransient<PlayerControlViewModel>()
                 .BuildServiceProvider()
             );

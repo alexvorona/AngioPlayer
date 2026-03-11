@@ -4,50 +4,45 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Dispatching;
 
-public class ScanService
+namespace AngioPlayer.Services;
+
+public interface IScanService
 {
-    private readonly string _path;
+    ObservableCollection<string> Scans { get; }
+    void LoadScans();
+}
+public class ScanService : IScanService
+{
+    private readonly string _scansPath;
     private readonly DispatcherQueue _dispatcher;
 
     public ObservableCollection<string> Scans { get; } = new();
 
-    public ScanService(string path, DispatcherQueue dispatcher)
+    public ScanService(ScanSettings settings, DispatcherQueue dispatcher)
     {
-        _path = path;
+        _scansPath = settings.ScansPath;
         _dispatcher = dispatcher;
 
-        if (!Directory.Exists(_path))
-            Directory.CreateDirectory(_path);
-
         LoadScans();
-
-        var watcher = new FileSystemWatcher(_path)
-        {
-            NotifyFilter = NotifyFilters.DirectoryName,
-            IncludeSubdirectories = false,
-            EnableRaisingEvents = true
-        };
-
-        watcher.Created += (_, __) => LoadScans();
-        watcher.Deleted += (_, __) => LoadScans();
-        watcher.Renamed += (_, __) => LoadScans();
     }
 
-    private void LoadScans()
+    public void LoadScans()
     {
-        Task.Run(() =>
-        {
-            var folders = Directory.GetDirectories(_path)
-                                   .Select(Path.GetFileName)
-                                   .OrderBy(name => name)
-                                   .ToList();
+        if (!Directory.Exists(_scansPath))
+            return;
 
-            _dispatcher.TryEnqueue(() =>
-            {
-                Scans.Clear();
-                foreach (var folder in folders)
-                    Scans.Add(folder);
-            });
-        });
+        var folders = Directory.GetDirectories(_scansPath)
+                               .Select(Path.GetFileName)
+                               .OrderBy(f => f);
+
+        foreach (var folder in folders)
+        {
+            Scans.Add(folder);
+        }
     }
+}
+
+public class ScanSettings
+{
+    public string ScansPath { get; set; } = string.Empty;
 }

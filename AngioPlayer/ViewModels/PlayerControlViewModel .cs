@@ -48,7 +48,7 @@ public partial class PlayerControlViewModel : ObservableObject
 
     private readonly DispatcherQueueTimer _timer;
 
-    private readonly ScanService _scanService;
+    private readonly IScanService _scanService;
     private readonly INotificationService _notificationsService;
 
     public ObservableCollection<string> Scans => _scanService.Scans;
@@ -61,14 +61,13 @@ public partial class PlayerControlViewModel : ObservableObject
     private List<ImageSource> _planeBBitmaps = new();
     private int _imageCount;
 
-    public PlayerControlViewModel(NotificationService notificationsService)
+    public PlayerControlViewModel(IScanService scanService, INotificationService notificationsService)
     {
         _timer = DispatcherQueue.GetForCurrentThread().CreateTimer();
         _timer.Interval = TimeSpan.FromMilliseconds(200);
         _timer.Tick += TimerTick;
 
-        // To do: все сервисы должны быть внедрены через DI
-        _scanService = new ScanService(ScansPath, DispatcherQueue.GetForCurrentThread());
+        _scanService = scanService;
         _notificationsService = notificationsService;
 
         // Сразу показываем Logo.png при старте
